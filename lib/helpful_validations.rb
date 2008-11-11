@@ -9,21 +9,24 @@ module HelpfulValidations
   module ClassMethods
     module ValidationHelpers
       module InstanceMethods
-        def attribute_is_valid?( field )
-          valid? # run the validations
-          errors[ field ].nil?
+        def attribute_is_valid?( attribute )
+          attributes_are_valid?( attribute )
+        end
+
+        def attributes_are_valid?( *attributes )
+          valid?
+
+          attributes.all? do | attribute |
+            errors[ attribute ].nil?
+          end
         end
       end
       
       module ClassMethods
-        def attributes_are_valid?( fields = {} )
-          return true if fields.empty?
-          model = self.new( fields )
-          model.valid? # run the validations
-          
-          fields.all? do | field, value |
-            model.errors[ field ].nil?
-          end
+        def attributes_are_valid?( attributes = {} )
+          return true if attributes.empty?
+          model = self.new( attributes )
+          model.attributes_are_valid?( *attributes.keys )
         end
       end
     end
