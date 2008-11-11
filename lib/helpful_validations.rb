@@ -1,6 +1,8 @@
 # HelpfulValidations
 
 module HelpfulValidations
+  DYNAMIC_VALIDATION_METHODS_REGEX = /^(\w+)_is_valid\?$/
+
   def self.included( base )
     base.send( :include, ClassMethods::ValidationHelpers::InstanceMethods )
     base.extend( ClassMethods::ValidationHelpers::ClassMethods )
@@ -20,6 +22,16 @@ module HelpfulValidations
             errors[ attribute ].nil?
           end
         end
+
+        def method_missing( method_name, *args, &block )
+          if match = method_name.to_s.match( DYNAMIC_VALIDATION_METHODS_REGEX )
+            attribute = match[ 1 ]
+            raise "Unknown attribute: #{ attribute }" unless respond_to?( attribute )
+            return attribute_is_valid?( attribute )
+          end
+
+          super
+        end
       end
       
       module ClassMethods
@@ -30,11 +42,11 @@ module HelpfulValidations
         end
 
         def method_missing( method_name, *args, &block )
-          if match = method_name.to_s.match( /^(\w+)_is_valid\?$/ )
+          if match = method_name.to_s.match( DYNAMIC_VALIDATION_METHODS_REGEX )
             attribute = match[ 1 ]
             value = args.first
 
-            raise "Uknown attribute: #{ attribute }" unless column_names.include?( attribute )
+            raise "Uknown attribute: #{ attribute }" unless respond_to?( attribute )
             raise ArgumentError, "Value for attribute not given" if args.empty?
             
             return attributes_are_valid?( attribute => value )
