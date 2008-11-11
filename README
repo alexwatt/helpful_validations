@@ -1,13 +1,27 @@
 HelpfulValidations
 ==================
 
-A simple plugin for allowing you to easily test that particular fields on your model are valid (or invalid).
+A simple plugin for allowing you to easily test whether or not a particular field(s) on your model are valid. 
 
 
 Example
 =======
 
 So maybe you want to test if a username is valid without having to make sure all the other fields in the model are valid. The best way I can explain this is if you take the example of a typical couple of lines in a spec:
+
+setup
+-----
+# user.rb
+class User < ActiveRecord::Base
+  validates_presence_of :username
+end
+
+# in the spec
+before do
+  @user = User.new
+end
+----
+
 
 @user.attributes = @valid_attributes.except( :username )
 @user.valid? #=> false 
