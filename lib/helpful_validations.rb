@@ -35,6 +35,18 @@ module HelpfulValidations
       end
       
       module ClassMethods
+        def validates( *args ) 
+          raise ArgumentError, "Block not given." unless block_given?
+          options = args.last.is_a?( Hash ) ? args.pop : {}
+          error_message = options[ :message ] || "is invalid"
+          
+          validates_each( *args ) do | record, attribute, value |
+            unless yield( value )
+              record.errors.add( attribute, error_message )
+            end
+          end
+        end
+
         def attributes_are_valid?( attributes = {} )
           return true if attributes.empty?
           model = self.new( attributes )

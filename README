@@ -35,6 +35,15 @@ OR
 @user.attribute_is_valid?( :username ) #=> false
 
 
+Just added a validates method:
+
+class User < ActiveRecord::Base
+  validates :username, :first_name, :message => "must be an anagram of sausage" do | attribute |
+    attribute.anagram?( "sausage" )
+  end
+end
+
+
 Usage
 =====
 
