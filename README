@@ -1,13 +1,37 @@
 HelpfulValidations
 ==================
 
-Introduction goes here.
+A simple plugin for allowing you to easily test that particular fields on your model are valid (or invalid).
 
 
 Example
 =======
 
-Example goes here.
+So maybe you want to test if a username is valid without having to make sure all the other fields in the model are valid. The best way I can explain this is if you take the example of a typical couple of lines in a spec:
+
+@user.attributes = @valid_attributes.except( :username )
+@user.valid? #=> false 
+
+Using this plugin the following line achieves the same thing - although this wasn't created to make your specs easier to write.
+
+@user.username_is_valid? #=> false
+
+OR
+
+@user.attribute_is_valid?( :username ) #=> false
 
 
-Copyright (c) 2008 [name of plugin creator], released under the MIT license
+Usage
+=====
+
+For the following examples of usage, assume User has two fields: :username, :first_name.
+
+User.username_is_valid?( "username" )                                             #=> true/false
+User.attributes_are_valid?( :username => "username", :first_name => "firstname" ) #=> true/false
+
+user = User.new
+user.username_is_valid?                              #=> true/false
+user.attribute_is_valid?( :username )                # => true/false
+user.attributes_are_valid?( :username, :first_name ) #=> true/false
+
+Copyright (c) 2008 Alex Watt, released under the MIT license
