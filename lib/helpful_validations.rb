@@ -28,6 +28,20 @@ module HelpfulValidations
           model = self.new( attributes )
           model.attributes_are_valid?( *attributes.keys )
         end
+
+        def method_missing( method_name, *args, &block )
+          if match = method_name.to_s.match( /^(\w+)_is_valid\?$/ )
+            attribute = match[ 1 ]
+            value = args.first
+
+            raise "Uknown attribute: #{ attribute }" unless column_names.include?( attribute )
+            raise ArgumentError, "Value for attribute not given" if args.empty?
+            
+            return attributes_are_valid?( attribute => value )
+          end
+
+          super
+        end
       end
     end
   end
