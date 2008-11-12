@@ -58,7 +58,6 @@ module HelpfulValidations
             attribute = match[ 1 ]
             value = args.first
 
-            raise "Uknown attribute: #{ attribute }" unless respond_to?( attribute )
             raise ArgumentError, "Value for attribute not given" if args.empty?
             
             return attributes_are_valid?( attribute => value )
